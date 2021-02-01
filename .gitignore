@@ -1,0 +1,11 @@
+/.idea
+/.vscode
+/.test
+CMakeFiles
+Makefile
+cmake_install.cmake
+CMakeCache.txt
+*.so
+!/lib/*.so
+*.o
+*.a
