@@ -37,7 +37,7 @@ int BigDecimal_RedisCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int a
     return RedisModule_WrongArity(ctx);
   }
 
-  RedisModule_ReplyWithString(ctx, x.toRedisString(ctx));
+  RedisModule_ReplyWithString(ctx, x.interimToRedisString(ctx));
   return REDISMODULE_OK;
 }
 

@@ -18,6 +18,12 @@ class RedisDecimal : public dec::decimal<Prec> {
     return RedisModule_CreateString(ctx, str.data(), str.length());
   }
 
+  // Interim
+  RedisModuleString *interimToRedisString(RedisModuleCtx *ctx) const {
+    std::string str = dec::toString(*this);
+    return RedisModule_CreateString(ctx, str.data(), str.length() - 1);
+  }
+
   const RedisDecimal operator+(const RedisDecimal &rhs) const {
     dec::decimal<Prec> result = static_cast<dec::decimal<Prec>>(*this) + static_cast<dec::decimal<Prec>>(rhs);
     return *static_cast<RedisDecimal<Prec> *>(&result);
