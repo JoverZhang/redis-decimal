@@ -2,7 +2,7 @@
 
 # Quick Start Guide
 
-## Building and Loading
+## 1. Building and Loading
 
 To build **RedisDecimal**, ensure you have `cmake` and `make`, and afterwards run the following command.
 
@@ -17,6 +17,26 @@ To load the library, pass its path to the `--loadmodule` directive when starting
 
 ```shell
 $ redis-server --loadmodule ./lib/libdecimal.so
+```
+
+## 2. Use RedisDecimal with `redis-cli`
+
+```shell
+# redis-cli
+127.0.0.1:6379>
+```
+
+And run the following command:
+
+```shell
+127.0.0.1:6379> DECIMAL ADD 10 20
+"30.000000000"
+127.0.0.1:6379> DECIMAL SUB 10 20
+"-10.000000000"
+127.0.0.1:6379> DECIMAL MUL 10 20
+"200.000000000"
+127.0.0.1:6379> DECIMAL DIV 10 20
+"0.500000000"
 ```
 
 # Extensions
