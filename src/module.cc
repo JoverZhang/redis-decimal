@@ -17,7 +17,7 @@ bool redisIgnoreCaseEquals(RedisModuleString *str, const char *expect) {
 }
 
 int BigDecimal_RedisCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
-  if (argc < 3) {
+  if (argc != 4) {
     return RedisModule_WrongArity(ctx);
   }
   RedisDecimal<PREC> x(argv[2]), y(argv[3]);
@@ -29,7 +29,9 @@ int BigDecimal_RedisCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int a
     x -= y;
   } else if (redisIgnoreCaseEquals(argv[1], "MUL")) {
     x *= y;
-  } else if (redisIgnoreCaseEquals(argv[1], "DIV")) {
+  }
+    // Check for division by zero.
+  else if (redisIgnoreCaseEquals(argv[1], "DIV") && y.getUnbiased() != 0) {
     x /= y;
   } else {
     return RedisModule_WrongArity(ctx);
