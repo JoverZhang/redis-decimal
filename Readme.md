@@ -1,3 +1,7 @@
+![GitHub](https://img.shields.io/github/v/release/joverzhang/redis-decimal?include_prereleases)
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/ttmo/redis-decimal?logo=docker)](https://hub.docker.com/repository/docker/ttmo/redis-decimal)
+![GitHub](https://img.shields.io/github/license/JoverZhang/redis-decimal)
+
 # RedisDecimal: Floating-Point Number based on 10 for Redis
 
 # Quick Start Guide
