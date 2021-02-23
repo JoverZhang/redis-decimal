@@ -9,3 +9,5 @@ add_subdirectory(./src)
 add_executable(tests
                ./test/test.cc
                ./test/test_utils.cc)
+
+target_link_libraries(tests decimal)

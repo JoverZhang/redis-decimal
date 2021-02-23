@@ -8,5 +8,5 @@ set(headers
 add_library(decimal SHARED
             module.cc
             redis_decimal.h
-            decimal_utils.h
+            decimal_utils.h decimal_utils.cc
             ${headers})
