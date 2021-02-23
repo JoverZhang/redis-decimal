@@ -81,6 +81,7 @@ void testDecimalUtils() {
     CHECK_EQ("200.000000", DecimalUtils::mul("10", "20", 6).data());
     CHECK_EQ("0.500000", DecimalUtils::div("10", "20", 6).data());
   }
+  // Test for precision
   {
     // Multiple
     CHECK_EQ("4.444400", DecimalUtils::mul("2.2222", "2", 6).data());
@@ -96,20 +97,18 @@ void testDecimalUtils() {
     CHECK_EQ("33.333333", DecimalUtils::div("100", "3", 6).data());
     CHECK_EQ("66.666666", DecimalUtils::div("200", "3", 6).data());
   }
+  // Test for 6 digit
   {
-    // Test for 6 digit
-    {
-      string x = "0";
-      for (int i = 0; i < 1'000'000; ++i) {
-        x = DecimalUtils::add(x, DecimalUtils::div("1", "1000000", 6), 6);
-      }
-      CHECK_EQ("1.000000", x.data());
-
-      for (int i = 0; i < 1'000'000; ++i) {
-        x = DecimalUtils::sub(x, DecimalUtils::mul("1", "0.000001", 6), 6);
-      }
-      CHECK_EQ("0.000000", x.data());
+    string x = "0";
+    for (int i = 0; i < 1'000'000; ++i) {
+      x = DecimalUtils::add(x, DecimalUtils::div("1", "1000000", 6), 6);
     }
+    CHECK_EQ("1.000000", x.data());
+
+    for (int i = 0; i < 1'000'000; ++i) {
+      x = DecimalUtils::sub(x, DecimalUtils::mul("1", "0.000001", 6), 6);
+    }
+    CHECK_EQ("0.000000", x.data());
   }
 }
 
