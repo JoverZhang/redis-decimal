@@ -1,8 +1,11 @@
 #include <string>
 #include "../deps/redismodule/redismodule.h"
 #include "./redis_decimal.h"
+#include "./decimal_utils.h"
 
-#define PREC 9
+#define RC_RETURN(rst) \
+  RedisModule_ReplyWithString(ctx, rst); \
+  return REDISMODULE_OK;
 
 
 bool ignoreCaseEquals(const std::string str, const std::string expect) {
@@ -12,33 +15,56 @@ bool ignoreCaseEquals(const std::string str, const std::string expect) {
 }
 
 bool redisIgnoreCaseEquals(RedisModuleString *str, const char *expect) {
-  return ignoreCaseEquals(std::string(RedisModule_StringPtrLen(str, NULL)),
-                          std::string(expect));
+  return ignoreCaseEquals(std::string(RedisModule_StringPtrLen(str, NULL)), std::string(expect));
+}
+
+int validate_precision(int prec) {
+  return prec < 0 || MAX_PREC < prec;
 }
 
 int BigDecimal_RedisCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
-  if (argc != 4) {
+  if (argc < 4 || argc > 5) {
     return RedisModule_WrongArity(ctx);
   }
-  RedisDecimal<PREC> x(argv[2]), y(argv[3]);
   RedisModule_AutoMemory(ctx);
 
-  if (redisIgnoreCaseEquals(argv[1], "ADD")) {
-    x += y;
-  } else if (redisIgnoreCaseEquals(argv[1], "SUB")) {
-    x -= y;
-  } else if (redisIgnoreCaseEquals(argv[1], "MUL")) {
-    x *= y;
-  }
-    // Check for division by zero.
-  else if (redisIgnoreCaseEquals(argv[1], "DIV") && y.getUnbiased() != 0) {
-    x /= y;
+  RedisModuleString *x = argv[2], *y = argv[3];
+  RedisDecimalUtils rdUtils(ctx);
+
+  // Set precision
+  long long int prec;
+  if (argc == 5) {
+    if (RedisModule_StringToLongLong(argv[4], &prec) || validate_precision(prec)) {
+      return RedisModule_WrongArity(ctx);
+    }
   } else {
-    return RedisModule_WrongArity(ctx);
+    prec = MAX_PREC;
   }
 
-  RedisModule_ReplyWithString(ctx, x.toRedisString(ctx));
-  return REDISMODULE_OK;
+  // Addition
+  if (redisIgnoreCaseEquals(argv[1], "ADD")) {
+    RC_RETURN(rdUtils.add(x, y, prec))
+  }
+  // Subtraction
+  if (redisIgnoreCaseEquals(argv[1], "SUB")) {
+    RC_RETURN(rdUtils.sub(x, y, prec))
+  }
+  // Multiplication
+  if (redisIgnoreCaseEquals(argv[1], "MUL")) {
+    RC_RETURN(rdUtils.mul(x, y, prec))
+  }
+  // Division
+  if (redisIgnoreCaseEquals(argv[1], "DIV")) {
+    // TODO: optimize here
+    // Check by zero
+    RedisDecimal<MAX_PREC> check_by_zero(y);
+    if (check_by_zero.getUnbiased() == 0) {
+      return RedisModule_WrongArity(ctx);
+    }
+    RC_RETURN(rdUtils.div(x, y, prec))
+  }
+
+  return RedisModule_WrongArity(ctx);
 }
 
 #ifdef __cplusplus
