@@ -52,5 +52,5 @@ To build **RedisDecimal**, and run the **unit testing**.
 ```shell
 cmake .
 make
-./.test/test
+./.tests/tests
 ```
